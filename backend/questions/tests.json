@@ -1,0 +1,21 @@
+{
+  "tests": [
+    {
+      "name": "GET questions list",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": [],
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "POST new question",
+      "method": "POST",
+      "path": "/",
+      "body": {"name": "Тест", "email": "test@test.com", "question": "Что такое ислам?"},
+      "expectedStatus": 200,
+      "expectedBody": {"success": true},
+      "bodyMatcher": "partial"
+    }
+  ]
+}

@@ -1,12 +1,30 @@
 import { useState } from "react";
 
+const API_URL = "https://functions.poehali.dev/21da5dda-7463-46ac-b6be-8fc8ada3e9c0";
+
 export default function ContactForm() {
   const [form, setForm] = useState({ name: "", email: "", question: "" });
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error("Ошибка отправки");
+      setSent(true);
+    } catch {
+      setError("Не удалось отправить. Проверьте подключение к интернету.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -67,11 +85,13 @@ export default function ContactForm() {
                 className="w-full border border-stone-300 px-4 py-3 text-stone-900 outline-none focus:border-emerald-800 transition-colors duration-200 bg-transparent resize-none"
               />
             </div>
+            {error && <p className="text-red-600 text-sm">{error}</p>}
             <button
               type="submit"
-              className="bg-emerald-900 text-white border border-emerald-900 px-6 py-3 text-sm uppercase tracking-wide transition-all duration-300 hover:bg-white hover:text-emerald-900 cursor-pointer w-fit"
+              disabled={loading}
+              className="bg-emerald-900 text-white border border-emerald-900 px-6 py-3 text-sm uppercase tracking-wide transition-all duration-300 hover:bg-white hover:text-emerald-900 cursor-pointer w-fit disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Отправить вопрос
+              {loading ? "Отправляем..." : "Отправить вопрос"}
             </button>
           </form>
         )}
